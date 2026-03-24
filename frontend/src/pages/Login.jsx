@@ -35,11 +35,11 @@ export default function Login() {
           onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
 
-        <select className="w-full mb-4 p-2 border"
+        {/* <select className="w-full mb-4 p-2 border"
           onChange={(e)=>setForm({...form,role:e.target.value})}>
           <option value="student">Student</option>
           <option value="instructor">Instructor</option>
-        </select>
+        </select> */}
 
         <button
           onClick={handleSubmit}
