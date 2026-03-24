@@ -7,33 +7,53 @@ export default function MyCourses() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    API.get("/courses").then((res) => setCourses(res.data));
+    fetchMyCourses();
   }, []);
 
+  const fetchMyCourses = async () => {
+    try {
+      const res = await API.get("/enrollments"); // ✅ IMPORTANT CHANGE
+      setCourses(res.data);
+    } catch (err) {
+      console.log(err);
+      alert("Error loading enrolled courses");
+    }
+  };
+
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold text-indigo-700 mb-4">
-        My Courses
+    <div className="p-6 min-h-screen bg-gradient-to-r from-blue-50 to-indigo-100">
+      
+      <h1 className="text-3xl font-bold text-indigo-700 mb-6">
+        🎓 My Courses
       </h1>
 
-      <div className="grid md:grid-cols-3 gap-4">
-        {courses.map((course) => (
-          <div
-            key={course.id}
-            className="bg-white rounded-xl shadow-lg p-4 hover:scale-105 transition"
-          >
-            <h2 className="font-bold text-lg">{course.title}</h2>
-            <p className="text-gray-600">{course.description}</p>
-
-            <button
-              onClick={() => navigate(`/course/${course.id}`)}
-              className="mt-3 bg-blue-600 text-white px-4 py-1 rounded"
+      {courses.length === 0 ? (
+        <p className="text-gray-600">No enrolled courses yet</p>
+      ) : (
+        <div className="grid md:grid-cols-3 gap-6">
+          {courses.map((course) => (
+            <div
+              key={course.id}
+              className="bg-white rounded-xl shadow-lg p-4 hover:scale-105 hover:shadow-2xl transition"
             >
-              View Course
-            </button>
-          </div>
-        ))}
-      </div>
+              <h2 className="font-bold text-lg text-gray-800">
+                {course.title}
+              </h2>
+
+              <p className="text-gray-600 mt-2">
+                {course.description}
+              </p>
+
+              <button
+                onClick={() => navigate(`/course/${course.id}`)}
+                className="mt-4 w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+              >
+                Continue Learning ▶
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
