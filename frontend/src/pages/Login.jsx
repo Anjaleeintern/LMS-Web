@@ -4,17 +4,31 @@ import { AuthContext } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function Login() {
-  const [form, setForm] = useState({});
+  const [form, setForm] = useState({ email: "", password: "" });
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleSubmit = async () => {
-    const res = await API.post("/auth/login", form);
-    login(res.data);
-    alert("Logged in successfully");
+    try {
+      if (!form.email || !form.password) {
+        alert("⚠️ Please fill all fields");
+        return;
+      }
 
-    if (res.data.user.role === "student") navigate("/student");
-    else navigate("/instructor");
+      const res = await API.post("/auth/login", {
+        email: form.email,
+        password: form.password,
+      });
+
+      login(res.data);
+      alert("✅ Login successful");
+
+      if (res.data.user.role === "student") navigate("/student");
+      else navigate("/instructor");
+
+    } catch (err) {
+      alert(err.response?.data || "❌ Login failed");
+    }
   };
 
   return (
@@ -25,6 +39,7 @@ export default function Login() {
         <input
           placeholder="Email"
           className="w-full mb-2 p-2 border"
+          value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
         />
 
@@ -32,14 +47,9 @@ export default function Login() {
           type="password"
           placeholder="Password"
           className="w-full mb-4 p-2 border"
+          value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
-
-        {/* <select className="w-full mb-4 p-2 border"
-          onChange={(e)=>setForm({...form,role:e.target.value})}>
-          <option value="student">Student</option>
-          <option value="instructor">Instructor</option>
-        </select> */}
 
         <button
           onClick={handleSubmit}
@@ -47,12 +57,13 @@ export default function Login() {
         >
           Login
         </button>
+
         <p className="text-sm mt-4 text-center">
-  Don't have an account?{" "}
-  <Link to="/signup" className="text-blue-600 font-semibold">
-    Signup
-  </Link>
-</p>
+          Don't have an account?{" "}
+          <Link to="/signup" className="text-blue-600 font-semibold">
+            Signup
+          </Link>
+        </p>
       </div>
     </div>
   );
